@@ -1,0 +1,1 @@
+while true; do sleep 2; clear; python3 link_dist.py; echo Updating plot at `date +'%I:%M:%S %p'`; done
