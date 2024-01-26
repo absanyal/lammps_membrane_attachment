@@ -1,0 +1,9 @@
+*
+!.gitignore
+
+!*.lammps
+!*.py
+!*.sh
+
+log.*
+old.*
