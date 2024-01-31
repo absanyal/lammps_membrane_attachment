@@ -2,13 +2,16 @@ import numpy as np
 
 ############ ENTER INPUTS HERE #######################
 
-auto_generate_seed = 0
+auto_generate_seed = 1
 
 # Name of polymer data file
 data_fname_str = 'polymer.data'
 
 # Name of LAMMPS input file
 input_fname_str = 'input.lammps'
+
+# Name of information file
+info_fname_str = 'info.txt'
 
 # ---Types---
 atom_types = 2
@@ -160,6 +163,14 @@ for i in range(n_atoms - 2):
     a_3 = a_2 + 1
     angle = [angle_type, a_1, a_2, a_3]
     angles.append(angle)
+    
+
+############## DATA FILES ################
+
+# ---Write data file for information---
+with open(info_fname_str, 'w') as info_f:
+    info_f.write('{}\n'.format(n_atoms))
+    info_f.write('{}\n'.format(n_linkers_membrane))
 
 # ---Write data file for atoms---
 with open(data_fname_str, 'w') as data_f:
