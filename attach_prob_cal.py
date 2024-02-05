@@ -4,9 +4,9 @@ import math
 from numpy import exp
 from math import gamma
 
-T = 310
+T = 110
 E = 500
-n = 50  # number of linkers
+n = 100 # number of linkers
 continuous_val = 0
 
 #--------------------
@@ -23,15 +23,17 @@ E = -E / kBT
 
 def attach_probability(n, m, continuous=False):
     """
-    Calculate and return the probability of attachment for given n, m, and continuous flag.
+    Calculate the attachment probability.
 
-    Args:
-        n (int): The total number of linkers.
-        m (int): The number of linkers to attach.
-        continuous (bool, optional): Flag indicating whether continuous probability should be used. Defaults to False.
+    Parameters:
+    n (int): Total number of particles.
+    m (int): Number of attached particles.
+    continuous (bool, optional): Flag indicating whether continuous or discrete attachment is considered. 
+                                 Defaults to False.
 
     Returns:
-        float: The calculated probability of attachment.
+    float: The attachment probability.
+
     """
     if (continuous == True):
         nCm = gamma(n + 1) / ((gamma(m + 1)) * (gamma(n - m + 1)))
@@ -73,4 +75,4 @@ plt.ylabel("Probability of attachment")
 plt.ylim(bottom=0)
 
 # plt.show()
-plt.savefig("attach_prob.pdf", bbox_inches='tight')
+plt.savefig("plots/attach_prob.pdf", bbox_inches='tight')
