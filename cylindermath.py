@@ -38,16 +38,22 @@ def moving_average(array, window_size, padding='constant'):
 
 class cylinder():
     """
-    Class representing a cylinder with radius and two points defining its axis.
+    Represents a cylinder in 3D space.
+
+    Attributes:
+        radius (float): The radius of the cylinder.
+        rA (vector): The position vector of end-point A on the long axis if the cylinder.
+        rB (vector): The position vector of end-point B on the long axis if the cylinder.
     """
+
     def __init__(self, radius, rA, rB):
         """
-        Initialize the circle with the given radius, rA, and rB.
+        Initialize the CylinderMath class.
 
-        Parameters:
-            radius (float): The radius of the circle.
-            rA (vector): The value of rA.
-            rB (vector): The value of rB.
+        Args:
+            radius (float): The radius of the cylinder.
+            rA (float): Position of end-point A.
+            rB (float): Position of end-point B.
         """
         self.radius = radius
         self.rA = rA

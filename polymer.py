@@ -128,7 +128,8 @@ chain = 1
 print("membrane linkers =", n_linkers_membrane)
 for i in range(n_linkers_membrane):
     j = i * n_skip_mem_linkers
-    # print(i, j)
+    j = n_atoms - j - 1
+    print("L {} placed with m {}".format(i+1, j+1))
     px = positions[j][2]
     py = positions[j][3] + 3.0
     pz = positions[j][4]
@@ -149,7 +150,9 @@ for i in range(n_atoms - 1):
 for i in range(n_linkers_membrane):
     b_start = i + 1 + n_atoms
     b_stop = i * n_skip_mem_linkers + 1
+    b_stop = n_atoms - b_stop + 1
     bond = [bond_type, b_start, b_stop]
+    print("L {} attached to m {}".format(b_start, b_stop))
     bonds.append(bond)
 
 # ---Setup angles---
@@ -171,6 +174,7 @@ for i in range(n_atoms - 2):
 with open(info_fname_str, 'w') as info_f:
     info_f.write('{}\n'.format(n_atoms))
     info_f.write('{}\n'.format(n_linkers_membrane))
+    info_f.write('{}\n'.format(n_skip_mem_linkers))
 
 # ---Write data file for atoms---
 with open(data_fname_str, 'w') as data_f:
