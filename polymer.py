@@ -1,8 +1,12 @@
 import numpy as np
+import angle
+from angle import filter_angle
 
 ############ ENTER INPUTS HERE #######################
 
+# various toggles
 auto_generate_seed = 1
+dump_minimization = 1
 
 # Name of polymer data file
 data_fname_str = 'polymer.data'
@@ -11,7 +15,11 @@ data_fname_str = 'polymer.data'
 input_fname_str = 'input.lammps'
 
 # Name of information file
-info_fname_str = 'info.txt'
+info_fname_str = 'data/info.txt'
+
+# Name of linker position file
+link_pos_fname_str = 'data/link_pos.txt'
+
 
 # ---Types---
 atom_types = 2
@@ -27,11 +35,11 @@ boundary = 'p p p'
 
 atom_style = 'molecular'
 
-global_cutoff = 10.0
+global_cutoff = 8.0
 
 timestep = 0.00001
 
-thermalize_steps = 10000
+thermalize_steps = 1000
 run_steps = 3000000
 
 measure_distance_every = 10000
@@ -71,10 +79,18 @@ angle_styles = [
 # Distance between two atoms in the filament
 bondlength = 2.5
 
+# Angle between the chain and the membrane (in degrees)
+theta = 120
+theta = filter_angle(theta)
+print("theta in degrees =", theta)
+
+theta = np.radians(theta)
+print("theta in radians =", theta)
+
 # Chain info (only count polymer chain)
 n_chains = 1
 chain_offset = 10
-distance_from_axis = 500
+distance_from_axis = 522
 
 # Per chain numbers
 n_atoms = 20
@@ -116,10 +132,17 @@ normalatom = 1
 for i in range(n_atoms):
     thisatom = normalatom
 
+    # For chain parallel to surface
+    # px = (xhi - xlo)/2.0
+    # py = (yhi - ylo)/2.0 + distance_from_axis
+    # pz = (i * bondlength) - (zhi - zlo)/2
+    
+    # For chain perpendicular to surface/at an angle
     px = (xhi - xlo)/2.0
-    # px = 100
-    py = (yhi - ylo)/2.0 + distance_from_axis
-    pz = (i * bondlength) - (zhi - zlo)/2
+    py = (yhi - ylo)/2.0 + distance_from_axis - i * bondlength * np.cos(theta)
+    pz = -(zhi - zlo)/2 - i * bondlength * np.sin(theta)
+    
+    
     positions.append([chain, thisatom, px, py, pz])
 
 # # Linkers
@@ -129,9 +152,9 @@ print("membrane linkers =", n_linkers_membrane)
 for i in range(n_linkers_membrane):
     j = i * n_skip_mem_linkers
     j = n_atoms - j - 1
-    print("L {} placed with m {}".format(i+1, j+1))
-    px = positions[j][2]
-    py = positions[j][3] + 3.0
+    print("L {} placed with m {}".format(i+1+n_atoms, j+1))
+    px = positions[j][2] - bondlength
+    py = positions[j][3]
     pz = positions[j][4]
     positions.append([chain, thisatom, px, py, pz])
 
@@ -266,7 +289,9 @@ with open(input_fname_str, 'w') as input_f:
 
     input_f.write('timestep {0:.10f}\n\n'.format(timestep))
 
-    input_f.write('dump minimization all atom 1 dump.min.lammpstrj\n')
+    if (dump_minimization == 1):
+        input_f.write('dump minimization all atom 1 dump.min.lammpstrj\n')
+    
     input_f.write('minimize 0.0 1.0e-8 10000 10000\n\n')
 
     input_f.write('fix 1 all nve/limit 0.01\n\n')
@@ -289,7 +314,9 @@ with open(input_fname_str, 'w') as input_f:
     input_f.write('run {}\n\n'.format(10000))
 
     input_f.write('unfix 1\n')
-    input_f.write('undump minimization\n\n')
+    
+    if (dump_minimization == 1):
+        input_f.write('undump minimization\n\n')
     
     input_f.write('reset_timestep 0\n\n')
     
@@ -300,7 +327,7 @@ with open(input_fname_str, 'w') as input_f:
     for i in range(n_linkers_membrane):
         input_f.write('${{x{0}}} ${{y{0}}} ${{z{0}}} '.format(i+1))
 
-    input_f.write('" file link_pos.txt screen no\n\n')
+    input_f.write('" file {} screen no\n\n'.format(link_pos_fname_str))
 
     input_f.write('dump mydump all atom 1000 dump.lammpstrj\n\n')
 

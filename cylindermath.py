@@ -1,17 +1,60 @@
-import numpy as np
+"""
+This module provides functions and a class for performing various mathematical and geometric operations.
 
+The module contains the following functions:
+
+- `moving_average`: Calculates the moving average of a numpy array with a specified window size and padding.
+- `norm`: Calculates the Euclidean norm of a given vector.
+- `distance_from_axis`: Calculates the distance from the axis of a cylinder to a given point.
+- `distance_from_surface`: Calculates the distance from the surface of a cylinder to a given point.
+
+The module also contains the `cylinder` class, which represents a cylinder in 3D space. The cylinder is defined by its radius and the position vectors of two end-points on its long axis.
+
+This module requires the numpy library.
+
+Example:
+    To calculate the moving average of an array with a window size of 3 and constant padding:
+    
+    ```python
+    import numpy as np
+    import cylindermath
+
+    array = np.array([1, 2, 3, 4, 5])
+    window_size = 3
+    moving_avg = cylindermath.moving_average(array, window_size, padding='constant')
+    print(moving_avg)
+    ```
+
+    To calculate the distance from the surface of a cylinder to a point:
+    
+    ```python
+    import numpy as np
+    import cylindermath
+
+    radius = 1.0
+    rA = np.array([0.0, 0.0, 0.0])
+    rB = np.array([0.0, 0.0, 1.0])
+    cyl = cylindermath.cylinder(radius, rA, rB)
+
+    rP = np.array([1.0, 1.0, 1.0])
+    distance = cylindermath.distance_from_surface(cyl, rP)
+    print(distance)
+    ```
+"""
+
+import numpy as np
 
 def moving_average(array, window_size, padding='constant'):
     """
     Calculates the moving average of an array with padding.
 
     Args:
-      array: The array to calculate the moving average of.
-      window_size: The size of the moving window.
-      padding: The type of padding to use.
+      array (numpy.ndarray): The array to calculate the moving average of.
+      window_size (int): The size of the moving window.
+      padding (str, optional): The type of padding to use. Defaults to 'constant'.
 
     Returns:
-      The moving average of the array.
+      numpy.ndarray: The moving average of the array.
     """
 
     if padding not in ['constant', 'reflect', 'edge']:
@@ -42,8 +85,8 @@ class cylinder():
 
     Attributes:
         radius (float): The radius of the cylinder.
-        rA (vector): The position vector of end-point A on the long axis if the cylinder.
-        rB (vector): The position vector of end-point B on the long axis if the cylinder.
+        rA (numpy.ndarray): The position vector of end-point A on the long axis if the cylinder.
+        rB (numpy.ndarray): The position vector of end-point B on the long axis if the cylinder.
     """
 
     def __init__(self, radius, rA, rB):
@@ -52,8 +95,8 @@ class cylinder():
 
         Args:
             radius (float): The radius of the cylinder.
-            rA (float): Position of end-point A.
-            rB (float): Position of end-point B.
+            rA (numpy.ndarray): Position of end-point A.
+            rB (numpy.ndarray): Position of end-point B.
         """
         self.radius = radius
         self.rA = rA
@@ -65,7 +108,7 @@ def norm(A):
     Calculate the Euclidean norm of a given vector.
 
     Parameters:
-    A (list): The input vector.
+    A (numpy.ndarray): The input vector.
 
     Returns:
     float: The Euclidean norm of the input vector.
@@ -81,12 +124,12 @@ def distance_from_axis(cyl, rP):
     Calculate the distance from the axis of a cylinder to a given point.
 
     Args:
-        cyl: The cylinder object with attributes rA and rB representing two points
+        cyl (cylinder): The cylinder object with attributes rA and rB representing two points
              defining the axis of the cylinder.
-        rP: The point for which the distance from the cylinder axis is calculated.
+        rP (numpy.ndarray): The point for which the distance from the cylinder axis is calculated.
 
     Returns:
-        The distance from the cylinder axis to the given point.
+        float: The distance from the cylinder axis to the given point.
     """
     e = cyl.rA - cyl.rB
     d = norm((np.cross(e, rP - cyl.rA)))/norm(e)
@@ -98,10 +141,10 @@ def distance_from_surface(cyl, rP):
     Calculate the distance from the surface of a cylinder to a given point.
 
     Args:
-        cyl: the cylinder object
-        rP: the point from which to calculate the distance
+        cyl (cylinder): The cylinder object.
+        rP (numpy.ndarray): The point from which to calculate the distance.
 
     Returns:
-        The distance from the surface of the cylinder to the given point
+        float: The distance from the surface of the cylinder to the given point.
     """
     return cyl.radius - distance_from_axis(cyl, rP)

@@ -11,7 +11,7 @@ region membrane cylinder x 175.0 175.0 175.0 0 1000
 group chain1 type 1
 group link_mem type 2
 
-pair_style zero 10.0 nocoeff
+pair_style zero 8.0 nocoeff
 pair_coeff * *
 
 bond_style harmonic
@@ -62,11 +62,11 @@ reset_timestep 0
 
 variable tsteps equal time
 
-fix link_pos all print 10000 "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2} ${x3} ${y3} ${z3} ${x4} ${y4} ${z4} ${x5} ${y5} ${z5} " file link_pos.txt screen no
+fix link_pos all print 10000 "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2} ${x3} ${y3} ${z3} ${x4} ${y4} ${z4} ${x5} ${y5} ${z5} " file data/link_pos.txt screen no
 
 dump mydump all atom 1000 dump.lammpstrj
 
-fix 2 all brownian 310 35120465 gamma_t 1.0
+fix 2 all brownian 310 54576937 gamma_t 1.0
 
 thermo 100000
 

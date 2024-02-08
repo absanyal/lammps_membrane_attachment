@@ -21,6 +21,8 @@ beta = 1.0 / (kB * T)
 E = -E / kBT
 #--------------------
 
+from math import gamma, comb, exp
+
 def attach_probability(n, m, continuous=False):
     """
     Calculate the attachment probability.
@@ -28,8 +30,7 @@ def attach_probability(n, m, continuous=False):
     Parameters:
     n (int): Total number of particles.
     m (int): Number of attached particles.
-    continuous (bool, optional): Flag indicating whether continuous or discrete attachment is considered. 
-                                 Defaults to False.
+    continuous (bool, optional): Flag indicating whether continuous or discrete attachment is considered. Defaults to False.
 
     Returns:
     float: The attachment probability.
@@ -38,7 +39,7 @@ def attach_probability(n, m, continuous=False):
     if (continuous == True):
         nCm = gamma(n + 1) / ((gamma(m + 1)) * (gamma(n - m + 1)))
     else:
-        nCm = math.comb(n, m)
+        nCm = comb(n, m)
     return (exp(-E * m * beta) / (-1 + pow(1 + exp(-E * beta), n))) * nCm
 
 
