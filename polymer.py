@@ -20,6 +20,9 @@ info_fname_str = 'data/info.txt'
 # Name of linker position file
 link_pos_fname_str = 'data/link_pos.txt'
 
+# Name of end positions file
+end_pos_fname_str = 'data/e2e_pos.txt'
+
 
 # ---Types---
 atom_types = 2
@@ -80,7 +83,7 @@ angle_styles = [
 bondlength = 2.5
 
 # Angle between the chain and the membrane (in degrees)
-theta = 120
+theta = 45
 theta = filter_angle(theta)
 print("theta in degrees =", theta)
 
@@ -90,7 +93,7 @@ print("theta in radians =", theta)
 # Chain info (only count polymer chain)
 n_chains = 1
 chain_offset = 10
-distance_from_axis = 522
+distance_from_axis = 0
 
 # Per chain numbers
 n_atoms = 20
@@ -133,14 +136,14 @@ for i in range(n_atoms):
     thisatom = normalatom
 
     # For chain parallel to surface
-    # px = (xhi - xlo)/2.0
-    # py = (yhi - ylo)/2.0 + distance_from_axis
-    # pz = (i * bondlength) - (zhi - zlo)/2
-    
-    # For chain perpendicular to surface/at an angle
     px = (xhi - xlo)/2.0
-    py = (yhi - ylo)/2.0 + distance_from_axis - i * bondlength * np.cos(theta)
-    pz = -(zhi - zlo)/2 - i * bondlength * np.sin(theta)
+    py = (yhi - ylo)/2.0 + distance_from_axis
+    pz = (i * bondlength) - (zhi - zlo)/2
+    
+    # # For chain perpendicular to surface/at an angle
+    # px = (xhi - xlo)/2.0
+    # py = (yhi - ylo)/2.0 + distance_from_axis - i * bondlength * np.cos(theta)
+    # pz = -(zhi - zlo)/2 - i * bondlength * np.sin(theta)
     
     
     positions.append([chain, thisatom, px, py, pz])
@@ -307,6 +310,14 @@ with open(input_fname_str, 'w') as input_f:
         input_f.write('variable x{} equal x[{}]\n'.format(i+1, j))
         input_f.write('variable y{} equal y[{}]\n'.format(i+1, j))
         input_f.write('variable z{} equal z[{}]\n\n'.format(i+1, j))
+    
+    input_f.write('variable e1x equal x[1]\n')
+    input_f.write('variable e1y equal y[1]\n')
+    input_f.write('variable e1z equal z[1]\n\n')
+    
+    input_f.write('variable e2x equal x[{}]\n'.format(n_atoms))
+    input_f.write('variable e2y equal y[{}]\n'.format(n_atoms))
+    input_f.write('variable e2z equal z[{}]\n\n'.format(n_atoms))
 
     input_f.write('thermo_style custom step time temp etotal\n')
     input_f.write('thermo 10000\n\n')
@@ -328,6 +339,14 @@ with open(input_fname_str, 'w') as input_f:
         input_f.write('${{x{0}}} ${{y{0}}} ${{z{0}}} '.format(i+1))
 
     input_f.write('" file {} screen no\n\n'.format(link_pos_fname_str))
+    
+    input_f.write('fix e2e_pos all print {} "${{tsteps}} '.format(measure_distance_every))
+    
+    input_f.write('${e1x} ${e1y} ${e1z} ')
+    input_f.write('${e2x} ${e2y} ${e2z} ')
+    
+    input_f.write('" file {} screen no\n\n'.format(end_pos_fname_str))
+    
 
     input_f.write('dump mydump all atom 1000 dump.lammpstrj\n\n')
 

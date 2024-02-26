@@ -50,6 +50,14 @@ variable x5 equal x[25]
 variable y5 equal y[25]
 variable z5 equal z[25]
 
+variable e1x equal x[1]
+variable e1y equal y[1]
+variable e1z equal z[1]
+
+variable e2x equal x[20]
+variable e2y equal y[20]
+variable e2z equal z[20]
+
 thermo_style custom step time temp etotal
 thermo 10000
 
@@ -64,9 +72,11 @@ variable tsteps equal time
 
 fix link_pos all print 10000 "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2} ${x3} ${y3} ${z3} ${x4} ${y4} ${z4} ${x5} ${y5} ${z5} " file data/link_pos.txt screen no
 
+fix e2e_pos all print 10000 "${tsteps} ${e1x} ${e1y} ${e1z} ${e2x} ${e2y} ${e2z} " file data/e2e_pos.txt screen no
+
 dump mydump all atom 1000 dump.lammpstrj
 
-fix 2 all brownian 310 54576937 gamma_t 1.0
+fix 2 all brownian 310 32564404 gamma_t 1.0
 
 thermo 100000
 

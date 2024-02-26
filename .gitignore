@@ -4,6 +4,7 @@
 !*.lammps
 !*.py
 !*.sh
+!README.md
 
 log.*
 old.*

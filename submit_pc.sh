@@ -17,8 +17,9 @@ mkdir -p data
 mkdir -p plots
 
 python3 polymer.py
-# time mpirun -n 8 lmp_mpi -i input.lammps > out.run
-# python3 link_dist.py
+time mpirun -n 8 lmp_mpi -i input.lammps > out.run
+python3 link_dist.py
+python3 e2e_plots.py
 
 echo "--------------------------------"
 
