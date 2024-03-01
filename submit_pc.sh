@@ -1,7 +1,7 @@
 mkdir -p runs
 cd runs
 
-for i in {1..10}
+for i in {3..10}
 do
 echo "submitting job $i"
     
@@ -12,6 +12,7 @@ cp ../../polymer.py .
 cp ../../link_dist.py .
 cp ../../cylindermath.py .
 cp ../../angle.py .
+cp ../../e2e_plots.py .
 
 mkdir -p data
 mkdir -p plots

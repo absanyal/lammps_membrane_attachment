@@ -43,9 +43,9 @@ global_cutoff = 8.0
 timestep = 0.00001
 
 thermalize_steps = 1000
-run_steps = 3000000
+run_steps = 5000000
 
-measure_distance_every = 10000
+measure_distance_every = 100
 
 # Brownian parameters
 brn_T = 310
@@ -66,7 +66,7 @@ wall_linker = [1500.0, 2.5, 10.0]
 
 # Format: Bond_style name, bond type number, k, r0
 bonds_styles = [
-    ['harmonic', 1, 1500.0, 2.5]
+    ['harmonic', 1, 1500.0, 5.0]
 ]
 
 # Format: angle_style name, angle type number, k, theta0
@@ -80,7 +80,7 @@ angle_styles = [
 # ---Filament Parameters
 
 # Distance between two atoms in the filament
-bondlength = 2.5
+bondlength = 5.0
 
 # Angle between the chain and the membrane (in degrees)
 theta = 45
@@ -135,15 +135,15 @@ normalatom = 1
 for i in range(n_atoms):
     thisatom = normalatom
 
-    # For chain parallel to surface
-    px = (xhi - xlo)/2.0
-    py = (yhi - ylo)/2.0 + distance_from_axis
-    pz = (i * bondlength) - (zhi - zlo)/2
-    
-    # # For chain perpendicular to surface/at an angle
+    # # For chain parallel to surface
     # px = (xhi - xlo)/2.0
-    # py = (yhi - ylo)/2.0 + distance_from_axis - i * bondlength * np.cos(theta)
-    # pz = -(zhi - zlo)/2 - i * bondlength * np.sin(theta)
+    # py = (yhi - ylo)/2.0 + distance_from_axis
+    # pz = (i * bondlength) - (zhi - zlo)/2
+    
+    # For chain perpendicular to surface/at an angle
+    px = (xhi - xlo)/2.0
+    py = (yhi - ylo)/2.0 + distance_from_axis - i * bondlength * np.cos(theta)
+    pz = -(zhi - zlo)/2 - i * bondlength * np.sin(theta)
     
     
     positions.append([chain, thisatom, px, py, pz])
