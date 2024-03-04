@@ -135,15 +135,15 @@ normalatom = 1
 for i in range(n_atoms):
     thisatom = normalatom
 
-    # # For chain parallel to surface
-    # px = (xhi - xlo)/2.0
-    # py = (yhi - ylo)/2.0 + distance_from_axis
-    # pz = (i * bondlength) - (zhi - zlo)/2
-    
-    # For chain perpendicular to surface/at an angle
+    # For chain parallel to surface
     px = (xhi - xlo)/2.0
-    py = (yhi - ylo)/2.0 + distance_from_axis - i * bondlength * np.cos(theta)
-    pz = -(zhi - zlo)/2 - i * bondlength * np.sin(theta)
+    py = (yhi - ylo)/2.0 + distance_from_axis
+    pz = (i * bondlength) - (zhi - zlo)/2
+    
+    # # For chain perpendicular to surface/at an angle
+    # px = (xhi - xlo)/2.0
+    # py = (yhi - ylo)/2.0 + distance_from_axis - i * bondlength * np.cos(theta)
+    # pz = -(zhi - zlo)/2 - i * bondlength * np.sin(theta)
     
     
     positions.append([chain, thisatom, px, py, pz])
