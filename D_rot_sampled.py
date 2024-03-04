@@ -24,10 +24,8 @@ t_shortened = t[:sample_window]
 # print("t0_iter_list: {}".format(t0_iter_list))
 
 for t0_i in t0_iter_list:
-    for t_i in range(sample_window):
-        init_angle = ang_dev_rad[t0_i]
-        ang_dev_sq_avg_sampled[t_i] += (ang_dev_rad[t0_i +
-                                        t_i] - init_angle)**2
+    init_angle = ang_dev_rad[t0_i]
+    ang_dev_sq_avg_sampled += (ang_dev_rad[t0_i:t0_i+sample_window]-init_angle)**2
 
 ang_dev_sq_avg_sampled /= len(t0_iter_list)
 
@@ -52,3 +50,7 @@ plt.xlabel(r'$t/\tau$', fontsize=18)
 plt.ylabel(r'$\langle \theta^2 \rangle$', fontsize=18)
 plt.legend(fontsize=14)
 plt.savefig('plots/D_rot_sampled.pdf')
+
+with open('data/D_rot_value.txt', 'w') as file:
+    file.write('# D\n')
+    file.write('{}\n'.format(fit_params[0]/(2)))
