@@ -37,7 +37,7 @@ global_cutoff = 0.0
 
 timestep = 0.00001
 
-run_steps = 5000000
+run_steps = 1000000
 
 measure_distance_every = 100
 
@@ -58,9 +58,9 @@ brownian = [brn_T, brn_seed, brn_gamma]
 n_atoms = 1
 
 # ---Box dimensions---
-xlo, xhi = 0.0, 1000
-ylo, yhi = 0.0, 1000
-zlo, zhi = 0.0, 1000
+xlo, xhi = 0.0, 10000
+ylo, yhi = 0.0, 10000
+zlo, zhi = 0.0, 10000
 
 # ---Setup mass---
 mass = [
