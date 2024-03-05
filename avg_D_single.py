@@ -26,7 +26,7 @@ D_step = 10
 bins_list = np.arange(D_min, D_max, D_step)
 
 plt.hist(D_list, bins=bins_list, color='b', alpha=0.7, edgecolor='k', density=True, rwidth=0.85)
-plt.xlabel(r'$D/\sigma^2\tau^{-1}$', fontsize=18)
+plt.xlabel(r'$D$', fontsize=18)
 plt.ylabel('Frequency', fontsize=18)
 plt.title(r'Trials = {}, $\langle D \rangle = {:.2f}$, $\sigma = {:.2f}$'.format(n_trials, D_avg, D_std), fontsize=18)
 plt.savefig('runs_measurements/D_single_avg_hist.pdf')
