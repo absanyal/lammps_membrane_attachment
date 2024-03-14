@@ -7,6 +7,9 @@ from angle import filter_angle
 # various toggles
 auto_generate_seed = 1
 dump_minimization = 1
+make_walls_big = 0
+compute_CoM_MSD = 0
+compute_CoM_pos = 1
 
 # Name of polymer data file
 data_fname_str = 'polymer.data'
@@ -22,6 +25,12 @@ link_pos_fname_str = 'data/link_pos.txt'
 
 # Name of end positions file
 end_pos_fname_str = 'data/e2e_pos.txt'
+
+# Name of CoM MSD file
+com_msd_fname_str = 'data/com_msd.txt'
+
+# Name of CoM position file
+com_pos_fname_str = 'data/com_pos.txt'
 
 
 # ---Types---
@@ -43,9 +52,9 @@ global_cutoff = 8.0
 timestep = 0.00001
 
 thermalize_steps = 1000
-run_steps = 5000000
+run_steps = 3000000
 
-measure_distance_every = 100
+measure_distance_every = 1000
 
 # Brownian parameters
 brn_T = 310
@@ -66,7 +75,7 @@ wall_linker = [1500.0, 2.5, 10.0]
 
 # Format: Bond_style name, bond type number, k, r0
 bonds_styles = [
-    ['harmonic', 1, 1500.0, 5.0]
+    ['harmonic', 1, 1500.0, 2.5]
 ]
 
 # Format: angle_style name, angle type number, k, theta0
@@ -80,7 +89,7 @@ angle_styles = [
 # ---Filament Parameters
 
 # Distance between two atoms in the filament
-bondlength = 5.0
+bondlength = 2.5
 
 # Angle between the chain and the membrane (in degrees)
 theta = 45
@@ -94,6 +103,7 @@ print("theta in radians =", theta)
 n_chains = 1
 chain_offset = 10
 distance_from_axis = 0
+# distance_from_axis = 522
 
 # Per chain numbers
 n_atoms = 20
@@ -110,6 +120,11 @@ n_linkers_cross = 0
 xlo, xhi = 0.0, 1000
 ylo, yhi = 0.0, 350
 zlo, zhi = 0.0, 350
+
+if (make_walls_big == 1):
+    xlo, xhi = 0.0, 1000
+    ylo, yhi = 0.0, 500
+    zlo, zhi = 0.0, 500
 
 # ---Setup mass---
 mass = [
@@ -318,6 +333,22 @@ with open(input_fname_str, 'w') as input_f:
     input_f.write('variable e2x equal x[{}]\n'.format(n_atoms))
     input_f.write('variable e2y equal y[{}]\n'.format(n_atoms))
     input_f.write('variable e2z equal z[{}]\n\n'.format(n_atoms))
+    
+    if (compute_CoM_MSD == 1):
+    
+        input_f.write('compute msdall all msd com yes average yes\n\n')
+        
+        input_f.write('variable comx equal c_msdall[1]\n')
+        input_f.write('variable comy equal c_msdall[2]\n')
+        input_f.write('variable comz equal c_msdall[3]\n')
+        input_f.write('variable comsq equal c_msdall[4]\n\n')
+    
+    if (compute_CoM_pos == 1):
+        input_f.write('compute comall all com\n\n')
+        
+        input_f.write('variable comx equal c_comall[1]\n')
+        input_f.write('variable comy equal c_comall[2]\n')
+        input_f.write('variable comz equal c_comall[3]\n\n')
 
     input_f.write('thermo_style custom step time temp etotal\n')
     input_f.write('thermo 10000\n\n')
@@ -346,6 +377,20 @@ with open(input_fname_str, 'w') as input_f:
     input_f.write('${e2x} ${e2y} ${e2z} ')
     
     input_f.write('" file {} screen no\n\n'.format(end_pos_fname_str))
+    
+    if (compute_CoM_MSD == 1):      
+        input_f.write('fix com_msd all print {} "${{tsteps}} '.format(measure_distance_every))
+        
+        input_f.write('${comx} ${comy} ${comz} ${comsq}')
+        
+        input_f.write('" file {} screen no\n\n'.format(com_msd_fname_str))
+    
+    if (compute_CoM_pos == 1):
+        input_f.write('fix com_pos all print {} "${{tsteps}} '.format(measure_distance_every))
+        
+        input_f.write('${comx} ${comy} ${comz}')
+        
+        input_f.write('" file {} screen no\n\n'.format(com_pos_fname_str))
     
 
     input_f.write('dump mydump all atom 1000 dump.lammpstrj\n\n')
