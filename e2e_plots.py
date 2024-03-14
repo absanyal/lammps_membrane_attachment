@@ -27,9 +27,9 @@ t, ang_deviation_list_rad, ang_deviation_list_deg = np.loadtxt('data/ang_deviati
 
 plt.figure(tight_layout=True)
 
-plt.plot(t, ang_deviation_list_deg, 'k-', linewidth=1, label='Angle deviation')
+plt.plot(t, ang_deviation_list_deg, 'k-', linewidth=0.5, label=r'$\Delta\theta$')
 plt.xlabel(r'$t/\tau$', fontsize=18)
-plt.ylabel("Angular deviation", fontsize=18)
+plt.ylabel(r'$\Delta\theta$', fontsize=18)
 
 plt.savefig('plots/ang_deviation.pdf')
 
@@ -51,11 +51,14 @@ plt.cla()
 
 plt.figure(tight_layout=True)
 
-plt.plot(t, e2e_dist_list, 'k-', linewidth=1, label='End to end distance')
-plt.plot(t, e2e_mean_line, 'r--', linewidth=2, label='Mean distance')
+plt.plot(t, e2e_dist_list, 'k-', linewidth=0.2, label='End to end distance')
+# plt.scatter(t, e2e_dist_list, s=5, label='End to end distance', color='k', marker='.', alpha=0.7, edgecolors='none')
+
+plt.plot(t, e2e_mean_line, 'r--', linewidth=2, label='Mean distance', alpha=0.7)
 plt.xlabel(r'$t/\tau$', fontsize=18)
 plt.ylabel("End to end distance", fontsize=18)
-plt.legend()
+plt.xlim(0, max(t))
+plt.legend(loc='best', markerscale=2)
 
 plt.savefig('plots/e2e_dist.pdf')
 
