@@ -52,6 +52,7 @@ plt.plot(t_shortened, ds_sq_avg_sampled, 'k-', label='Data')
 plt.plot(t_shortened, fitline, 'r--', label='Fit')
 plt.xlabel(r'$t/\tau$', fontsize=18)
 plt.ylabel(r'$\langle \Delta s^2 \rangle$', fontsize=18)
+plt.title(r"$D_{{com}} = {:.4f}$".format(D))
 plt.legend(fontsize=14)
 plt.savefig('plots/D_com_sampled.pdf')
 

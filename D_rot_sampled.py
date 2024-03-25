@@ -49,6 +49,7 @@ plt.plot(t_shortened, ang_dev_sq_avg_sampled, 'k-', label='Data')
 plt.plot(t_shortened, fitline, 'r--', label='Fit')
 plt.xlabel(r'$t/\tau$', fontsize=18)
 plt.ylabel(r'$\langle \theta^2 \rangle$', fontsize=18)
+plt.title(r"$D_{{rot}} = {:.4f}$".format(fit_params[0]/(2)))
 plt.legend(fontsize=14)
 plt.savefig('plots/D_rot_sampled.pdf')
 
