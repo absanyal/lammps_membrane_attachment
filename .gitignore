@@ -8,3 +8,5 @@
 log.*
 old.*
 test.*
+
+summit_scripts/
