@@ -63,19 +63,25 @@ brn_T = 310
 brn_gamma = 1.0
 brn_seed = 490563
 
+brn_gamma_embedded = 100.0
+brn_seed_embedded = 490563
+
 if (auto_generate_seed == 1):
     brn_seed = np.random.randint(1, 100000000)
+    brn_seed_embedded = np.random.randint(1, 100000000)
 
-print("Seed used =", brn_seed)
+print("Seed used (filament) =", brn_seed)
+print("Seed used (embedded) =", brn_seed_embedded)
 
 brownian = [brn_T, brn_seed, brn_gamma]
+brownian_embedded = [brn_T, brn_seed_embedded, brn_gamma_embedded]
 
 # Potentials in format epsilon, sigma, Rc
 
-wall_chain = [5.0, 5.0, 5.0]
+wall_chain = [5.0, 1.0, 1.0]
 wall_linker = [1500.0, 2.5, 10.0]
-wall_memlinker = [5.0, 5.0, 5.0]
-memlinker_chain = [1500.0, 2.5, 10.0]
+wall_memlinker = [5.0, 1.0, 1.0]
+memlinker_chain = [1500.0, 2.5, 8.0]
 
 # Format: Bond_style name, bond type number, k, r0
 bonds_styles = [
@@ -103,13 +109,17 @@ print("theta in degrees =", theta)
 theta = np.radians(theta)
 print("theta in radians =", theta)
 
+buffer = 5
+
 # Chain info (only count polymer chain)
 n_chains = 1
 chain_offset = 10
 distance_from_axis = 0
-# distance_from_axis = 522
+distance_from_axis = 170
 
-distance_between_membranes = 5
+distance_between_membranes = 10
+
+# distance_from_axis -= (buffer + distance_between_membranes)
 
 # Per chain numbers
 n_atoms = 20
@@ -121,14 +131,12 @@ n_cross_bonds = 0
 # ---Linker numbers---
 n_skip_fil_linkers = 4  # Gap between two successive linkers
 n_linkers_cross = 0
-n_linkers_embedded = 100
+n_linkers_embedded = 1000
 
 # ---Box dimensions---
 xlo, xhi = 0.0, 1000
-ylo, yhi = 0.0, 400
-zlo, zhi = 0.0, 400
-
-buffer = 10
+ylo, yhi = 0.0, 380
+zlo, zhi = 0.0, 380
 
 if (make_walls_big == 1):
     xlo, xhi = 0.0, 1000
@@ -161,15 +169,15 @@ normalatom = 1
 for i in range(n_atoms):
     thisatom = normalatom
 
-    # For chain parallel to surface
-    px = (xhi - xlo)/2.0
-    py = (yhi - ylo)/2.0 + distance_from_axis
-    pz = (i * bondlength) - (zhi - zlo)/2
+    # # For chain parallel to surface
+    # px = (xhi - xlo)/2.0
+    # py = (yhi - ylo)/2.0 + distance_from_axis
+    # pz = -(i * bondlength) + (zhi - zlo)/2
     
     # For chain perpendicular to surface/at an angle
     px = (xhi - xlo)/2.0
-    py = (yhi - ylo)/2.0 + distance_from_axis - i * bondlength * np.cos(theta) - distance_between_membranes - buffer
-    pz = -(zhi - zlo)/2 - i * bondlength * np.sin(theta)
+    py = (yhi - ylo)/2.0 + distance_from_axis - i * bondlength * np.cos(theta)
+    pz = (zhi - zlo)/2 - i * bondlength * np.sin(theta)
     
     
     positions.append([chain, thisatom, px, py, pz])
@@ -304,7 +312,7 @@ with open(input_fname_str, 'w') as input_f:
     input_f.write('read_data {}\n\n'.format(data_fname_str))
     
     outer_radius = (yhi - ylo)/2 - buffer
-    inner_radius = outer_radius - 2 * distance_between_membranes
+    inner_radius = outer_radius - distance_between_membranes
     
     input_f.write('region membrane_inner cylinder x {} {} {} 0 {}\n'.format(
         yhi/2, zhi/2, inner_radius, xhi))
@@ -321,8 +329,9 @@ with open(input_fname_str, 'w') as input_f:
     input_f.write('group chain_linkers type 2\n'.format())
     input_f.write('group embedded type 3\n\n'.format())
 
-    input_f.write('pair_style zero {} nocoeff\n'.format(global_cutoff))
-    input_f.write('pair_coeff * *\n\n')
+    input_f.write('pair_style lj/cut {}\n'.format(global_cutoff))
+    input_f.write('pair_coeff * * {} {} {}\n'.format(0.0, 0.0, global_cutoff))
+    input_f.write('pair_coeff 1 3 {} {} {}\n\n'.format(*memlinker_chain))
 
     for bst in bonds_styles:
         input_f.write('bond_style {}\n'.format(bst[0]))
@@ -427,7 +436,8 @@ with open(input_fname_str, 'w') as input_f:
     input_f.write('dump mydump all atom 1000 dump.lammpstrj\n\n')
 
     input_f.write(
-        'fix 2 all brownian {0} {1} gamma_t {2}\n\n'.format(*brownian))
+        'fix 2 chain1 brownian {0} {1} gamma_t {2}\n'.format(*brownian))
+    input_f.write('fix 3 embedded brownian {0} {1} gamma_t {2}\n\n'.format(*brownian_embedded))
 
     input_f.write('thermo 100000\n\n')
 
