@@ -9,6 +9,7 @@ while true; do
     clear
     # Run the link_distance.py script
     python3 link_dist.py
+    python3 com_dist.py
     # Print the current date and time
     echo "Updating plot at $(date +'%m/%d/%Y %I:%M:%S %p')"
 done
