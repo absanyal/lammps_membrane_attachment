@@ -33,6 +33,9 @@ com_msd_fname_str = 'data/com_msd.txt'
 # Name of CoM position file
 com_pos_fname_str = 'data/com_pos.txt'
 
+# Name of interactions dump file
+interactions_fname_str = 'dump.interactions'
+
 
 # ---Types---
 atom_types = 3
@@ -49,7 +52,7 @@ boundary = 'p p p'
 
 atom_style = 'molecular'
 
-global_cutoff = 8.0
+global_cutoff = 6.0
 
 timestep = 0.00001
 
@@ -78,10 +81,10 @@ brownian_embedded = [brn_T, brn_seed_embedded, brn_gamma_embedded]
 
 # Potentials in format epsilon, sigma, Rc
 
-wall_chain = [5.0, 1.0, 1.0]
-wall_linker = [1500.0, 2.5, 10.0]
+wall_chain = [5.0, 2.5, 2.5]
+wall_linker = [1500.0, 2.5, 6.0]
 wall_memlinker = [5.0, 1.0, 1.0]
-memlinker_chain = [1500.0, 2.5, 8.0]
+memlinker_chain = [1500.0, 2.5, 6.0]
 
 # Format: Bond_style name, bond type number, k, r0
 bonds_styles = [
@@ -109,17 +112,13 @@ print("theta in degrees =", theta)
 theta = np.radians(theta)
 print("theta in radians =", theta)
 
-buffer = 5
-
 # Chain info (only count polymer chain)
 n_chains = 1
 chain_offset = 10
 distance_from_axis = 0
-distance_from_axis = 170
+distance_from_axis = 172.5
 
-distance_between_membranes = 10
-
-# distance_from_axis -= (buffer + distance_between_membranes)
+distance_between_membranes = 2.5
 
 # Per chain numbers
 n_atoms = 20
@@ -135,8 +134,8 @@ n_linkers_embedded = 1000
 
 # ---Box dimensions---
 xlo, xhi = 0.0, 1000
-ylo, yhi = 0.0, 380
-zlo, zhi = 0.0, 380
+ylo, yhi = 0.0, 350
+zlo, zhi = 0.0, 350
 
 if (make_walls_big == 1):
     xlo, xhi = 0.0, 1000
@@ -311,7 +310,7 @@ with open(input_fname_str, 'w') as input_f:
 
     input_f.write('read_data {}\n\n'.format(data_fname_str))
     
-    outer_radius = (yhi - ylo)/2 - buffer
+    outer_radius = (yhi - ylo)/2
     inner_radius = outer_radius - distance_between_membranes
     
     input_f.write('region membrane_inner cylinder x {} {} {} 0 {}\n'.format(
@@ -351,7 +350,7 @@ with open(input_fname_str, 'w') as input_f:
     input_f.write('fix 1 all nve/limit 0.01\n\n')
 
     input_f.write(
-    'fix wallchain1 chain1 wall/region membrane_inner lj93 {} {} {}\n'.format(*wall_chain))
+    'fix wallchain1 chain1 wall/region membrane_outer lj93 {} {} {}\n'.format(*wall_chain))
     input_f.write('fix wallembed embedded wall/region membrane lj93 {} {} {}\n\n'.format(*wall_memlinker))
         
     if (linkers_on_filament == 1):
@@ -410,6 +409,11 @@ with open(input_fname_str, 'w') as input_f:
             input_f.write('${{x{0}}} ${{y{0}}} ${{z{0}}} '.format(i+1))
 
         input_f.write('" file {} screen no\n\n'.format(link_pos_fname_str))
+    
+    input_f.write('compute 1 all property/local ptype1 ptype2\n')
+    input_f.write('compute 2 all pair/local dist eng force\n')
+    input_f.write('dump 1 all local {} {} index c_1[1] c_1[2] c_2[1]\n\n'.format(measure_distance_every, interactions_fname_str))
+    
     
     input_f.write('fix e2e_pos all print {} "${{tsteps}} '.format(measure_distance_every))
     
