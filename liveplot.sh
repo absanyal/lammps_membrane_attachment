@@ -12,4 +12,6 @@ while true; do
     python3 com_dist.py
     # Print the current date and time
     echo "Updating plot at $(date +'%m/%d/%Y %I:%M:%S %p')"
+    grep -E ' 1 3 | 3 1 |ITEM: TIMESTEP' dump.interactions > test.interactions.dump
+    python3 process_interactions.py
 done
