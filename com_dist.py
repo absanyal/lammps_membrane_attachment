@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cylindermath as cm
 
-rA = np.array([0.0, 190.0, 190.0])
-rB = np.array([1000.0, 190.0, 190.0])
+rA = np.array([0.0, 175.0, 175.0])
+rB = np.array([1000.0, 175.0, 175.0])
 c = cm.cylinder(175.0, rA, rB)
 
 t_list, comx, comy, comz = np.loadtxt('data/com_pos.txt', unpack=True)
