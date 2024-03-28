@@ -4,8 +4,12 @@ import matplotlib.pyplot as plt
 data = open('test.interactions.dump', 'r')
 lines = data.readlines()
 
-attachment_d = 2.7
-print("Attachment distance: {}".format(attachment_d))
+attachment_d = 2.85
+print("Attachment distance: {:.2f}".format(attachment_d))
+
+attachment_minimum = 2
+attachment_minimum = int(attachment_minimum)
+print("Minimum monomers to be attatched: {}".format(attachment_minimum))
 
 t_list_original = np.loadtxt('data/com_pos.txt', usecols=0)
 
@@ -36,7 +40,7 @@ for line in lines:
         # t_list.append(t)
         # d_list.append(d)
 
-        if (d < 3.0):
+        if (d < attachment_d):
             attachments_found += 1
 
 # for i in range(len(t_list)):
@@ -47,16 +51,17 @@ for line in lines:
 # plt.ylabel(r'Distance of interacting pairs (nm)', fontsize=14)
 # plt.show()
 
-# plt.clf()
-# plt.cla()
+plt.figure(tight_layout=True)
 
-ax = plt.figure(tight_layout=True).gca()
-ax.yaxis.get_major_locator().set_params(integer=True)
-# plt.figure(tight_layout=True)
+max_attachments = max(num_attach_list)
+max_attachments = max_attachments + 1
 
-plt.plot(t_attach_list, num_attach_list, color='k', linewidth=1.0)
+yticklist = np.arange(0, max_attachments, 1)
+
+plt.plot(t_attach_list, num_attach_list, color='k', linewidth=1.0, label='Number of attached monomers')
 plt.xlabel(r'$t/\tau$', fontsize=18)
 plt.ylabel(r'Number of attached monomers', fontsize=14)
+plt.yticks(yticklist)
 plt.grid(axis='y', linestyle='--', linewidth=0.8)
-plt.axhline(y=2, color='r', linestyle='--', linewidth=1.0)
+plt.axhline(y=attachment_minimum, color='r', linestyle='--', linewidth=1.0)
 plt.savefig('plots/mono_attachment.pdf')
