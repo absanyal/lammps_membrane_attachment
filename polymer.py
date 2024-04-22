@@ -92,7 +92,7 @@ angle_styles = [
 bondlength = 2.5
 
 # Angle between the chain and the membrane (in degrees)
-theta = 45
+theta = 80
 theta = filter_angle(theta)
 print("theta in degrees =", theta)
 
@@ -102,8 +102,8 @@ print("theta in radians =", theta)
 # Chain info (only count polymer chain)
 n_chains = 1
 chain_offset = 10
-distance_from_axis = 0
-# distance_from_axis = 522
+# distance_from_axis = 0
+distance_from_axis = 522
 
 # Per chain numbers
 n_atoms = 20
@@ -150,15 +150,15 @@ normalatom = 1
 for i in range(n_atoms):
     thisatom = normalatom
 
-    # For chain parallel to surface
-    px = (xhi - xlo)/2.0
-    py = (yhi - ylo)/2.0 + distance_from_axis
-    pz = -(i * bondlength) + (zhi - zlo)/2
-    
-    # # For chain perpendicular to surface/at an angle
+    # # For chain parallel to surface
     # px = (xhi - xlo)/2.0
-    # py = (yhi - ylo)/2.0 + distance_from_axis - i * bondlength * np.cos(theta)
-    # pz = (zhi - zlo)/2.0 - i * bondlength * np.sin(theta)
+    # py = (yhi - ylo)/2.0 + distance_from_axis
+    # pz = -(i * bondlength) + (zhi - zlo)/2
+    
+    # For chain perpendicular to surface/at an angle
+    px = (xhi - xlo)/2.0
+    py = (yhi - ylo)/2.0 + distance_from_axis - i * bondlength * np.cos(theta)
+    pz = (zhi - zlo)/2.0 - i * bondlength * np.sin(theta)
     
     
     positions.append([chain, thisatom, px, py, pz])
