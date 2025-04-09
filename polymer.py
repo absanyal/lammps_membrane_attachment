@@ -221,7 +221,7 @@ with open(info_fname_str, 'w') as info_f:
 with open(data_fname_str, 'w') as data_f:
 
     # ---Header---
-    data_f.write("Two chains and floating linkers\n\n")
+    data_f.write("Filament with linkers\n\n")
 
     # Numbers
     data_f.write('{} atoms\n'.format(n_atoms * n_chains +
@@ -286,17 +286,23 @@ with open(input_fname_str, 'w') as input_f:
 
     input_f.write('atom_style {}\n\n'.format(atom_style))
 
+    input_f.write('#---Read data file---\n')
     input_f.write('read_data {}\n\n'.format(data_fname_str))
 
+    input_f.write('#---Set up the cylindrical cell---\n')
     input_f.write('region membrane cylinder x {} {} {} 0 {}\n\n'.format(
         yhi/2, zhi/2, yhi/2, xhi))
 
+    input_f.write('#Group containing all atoms in the filament\n')
     input_f.write('group chain1 type 1\n'.format())
+    input_f.write('#Group containing all linker atoms\n')
     input_f.write('group link_mem type 2\n\n'.format())
 
+    input_f.write('#Pair style set to no monomer-monomer interactions\n')
     input_f.write('pair_style zero {} nocoeff\n'.format(global_cutoff))
     input_f.write('pair_coeff * *\n\n')
 
+    input_f.write('#---Bond and angle styles---\n')
     for bst in bonds_styles:
         input_f.write('bond_style {}\n'.format(bst[0]))
         input_f.write('bond_coeff {} {} {}\n\n'.format(*bst[1:]))
@@ -305,20 +311,28 @@ with open(input_fname_str, 'w') as input_f:
         input_f.write('angle_style {}\n'.format(ast[0]))
         input_f.write('angle_coeff {} {} {}\n\n'.format(*ast[1:]))
 
+    input_f.write('#---Time step---\n')
     input_f.write('timestep {0:.10f}\n\n'.format(timestep))
 
     if (dump_minimization == 1):
+        input_f.write('#---Dump during minimization---\n')
         input_f.write('dump minimization all atom 1 dump.min.lammpstrj\n')
     
+    input_f.write('#---Minimization---\n')
     input_f.write('minimize 0.0 1.0e-8 10000 10000\n\n')
 
+    input_f.write('#---Thermalization: the limit ensures atoms move only slightly\n')
     input_f.write('fix 1 all nve/limit 0.01\n\n')
 
+    input_f.write('#---Hard sphere potential for the wall---\n')
     input_f.write(
         'fix wallchain1 chain1 wall/region membrane lj93 {} {} {}\n'.format(*wall_chain))
+    
+    input_f.write("#---Attractive potential for the linker---\n")
     input_f.write(
         'fix walllinkermem link_mem wall/region membrane lj93 {} {} {}\n\n'.format(*wall_linker))
 
+    input_f.write('#---Record the positions of the linkers and end-to-end distance---\n')
     for i in range(n_linkers_membrane):
         j = i + n_atoms + 1
 
@@ -336,6 +350,7 @@ with open(input_fname_str, 'w') as input_f:
     
     if (compute_CoM_MSD == 1):
     
+        input_f.write('#---Compute the center of mass---\n')
         input_f.write('compute msdall all msd com yes average yes\n\n')
         
         input_f.write('variable comx equal c_msdall[1]\n')
@@ -344,18 +359,21 @@ with open(input_fname_str, 'w') as input_f:
         input_f.write('variable comsq equal c_msdall[4]\n\n')
     
     if (compute_CoM_pos == 1):
+        input_f.write('#---Compute the mean square displacement of the center of mass---\n')
         input_f.write('compute comall all com\n\n')
         
         input_f.write('variable comx equal c_comall[1]\n')
         input_f.write('variable comy equal c_comall[2]\n')
         input_f.write('variable comz equal c_comall[3]\n\n')
 
+    input_f.write('#---Print step number, time, temperature, and energy during thermalization---\n')
     input_f.write('thermo_style custom step time temp etotal\n')
     input_f.write('thermo 10000\n\n')
 
     input_f.write('run {}\n\n'.format(10000))
 
     input_f.write('unfix 1\n')
+    input_f.write('#---Thermalization over---\n')
     
     if (dump_minimization == 1):
         input_f.write('undump minimization\n\n')
@@ -364,6 +382,7 @@ with open(input_fname_str, 'w') as input_f:
     
     input_f.write('variable tsteps equal time\n\n')
 
+    input_f.write('#---Print linker positions and end-to-end distance---\n')
     input_f.write('fix link_pos all print {} "${{tsteps}} '.format(measure_distance_every))
 
     for i in range(n_linkers_membrane):
@@ -393,8 +412,10 @@ with open(input_fname_str, 'w') as input_f:
         input_f.write('" file {} screen no\n\n'.format(com_pos_fname_str))
     
 
+    input_f.write('#---Dump file for visualization---\n')
     input_f.write('dump mydump all atom 1000 dump.lammpstrj\n\n')
 
+    input_f.write('#---Brownian thermostat---\n')
     input_f.write(
         'fix 2 all brownian {0} {1} gamma_t {2}\n\n'.format(*brownian))
 
@@ -402,4 +423,5 @@ with open(input_fname_str, 'w') as input_f:
 
     input_f.write('run {}\n'.format(run_steps))
     
+    input_f.write('#---Save a final snapshot with all bonds\n')
     input_f.write('write_data finalstate.lammpstrj\n')
