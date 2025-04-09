@@ -1,7 +1,7 @@
 mkdir -p runs
 cd runs
 
-for i in {3..10}
+for i in {1..1}
 do
 echo "submitting job $i"
     

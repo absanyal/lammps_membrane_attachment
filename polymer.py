@@ -52,12 +52,12 @@ global_cutoff = 8.0
 timestep = 0.00001
 
 thermalize_steps = 1000
-run_steps = 3000000
+run_steps = 2000
 
 measure_distance_every = 1000
 
 # Brownian parameters
-brn_T = 310
+brn_T = 31
 brn_gamma = 1.0
 brn_seed = 490563
 
@@ -92,7 +92,7 @@ angle_styles = [
 bondlength = 2.5
 
 # Angle between the chain and the membrane (in degrees)
-theta = 80
+theta = 45
 theta = filter_angle(theta)
 print("theta in degrees =", theta)
 
@@ -102,8 +102,8 @@ print("theta in radians =", theta)
 # Chain info (only count polymer chain)
 n_chains = 1
 chain_offset = 10
-# distance_from_axis = 0
-distance_from_axis = 522
+distance_from_axis = 0
+# distance_from_axis = 522
 
 # Per chain numbers
 n_atoms = 20
@@ -113,7 +113,7 @@ n_angles = n_bonds - 1
 n_cross_bonds = 0
 
 # ---Linker numbers---
-n_skip_mem_linkers = 4  # Gap between two successive linkers
+n_skip_mem_linkers = 2  # Gap between two successive linkers
 n_linkers_cross = 0
 
 # ---Box dimensions---
@@ -401,3 +401,5 @@ with open(input_fname_str, 'w') as input_f:
     input_f.write('thermo 100000\n\n')
 
     input_f.write('run {}\n'.format(run_steps))
+    
+    input_f.write('write_data finalstate.lammpstrj\n')
